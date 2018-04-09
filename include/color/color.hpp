@@ -8,9 +8,9 @@ struct color {
 
 inline color get_color(double iter, int max_iter=100) {
     iter /= max_iter;
-    unsigned char color_r = (1-iter*(iter - 2)) * 255;
-    unsigned char color_g = color_r, color_b = color_r;
-    if( color_r > 100 ) color_g /= 2, color_b /= 3;
+    unsigned char color_g = (1-iter*(iter - 2)) * 255;
+    unsigned char color_r = color_g, color_b = color_g;
+    if( color_g > 100 ) color_r /= 2, color_b /= 3;
     return {color_r, color_g, color_b, 255};
 }
 

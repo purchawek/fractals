@@ -8,13 +8,15 @@ const size_t DEFAULT_ITER_CNT = 100;
 class julia_sets {
     using Number = std::complex<double>;
 
-    const Number z0;
     const size_t MAX_ITER_CNT;
 
 
 public:
+    Number z0;
+
+
     julia_sets(Number z0, size_t max_cnt = DEFAULT_ITER_CNT)
-    : z0 {z0}, MAX_ITER_CNT {max_cnt} {}
+    : MAX_ITER_CNT {max_cnt}, z0 {z0}  {}
 
 
 
