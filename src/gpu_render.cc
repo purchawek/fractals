@@ -25,7 +25,8 @@ void create_window(render_ctx& ctx) {
         return;
     }
     float z0_x = -0.789;
-    shader.setUniform("z0", sf::Glsl::Vec2(z0_x, 0.09));
+    float z0_y = 0.15;
+    shader.setUniform("z0", sf::Glsl::Vec2(z0_x, z0_y));
     shader.setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
     shader.setUniform("resolution", sf::Glsl::Vec2(ctx.cs_width(), ctx.cs_height()));
     shader.setUniform("factor", (float)ctx.zoom_factor());
@@ -37,7 +38,7 @@ void create_window(render_ctx& ctx) {
 
     sf::Text z0_text;
     z0_text.setFont(font);
-    z0_text.setString("z0 = " + std::to_string(z0_x) + ": " + std::to_string(0.09));
+    z0_text.setString("z0 = " + std::to_string(z0_x) + ": " + std::to_string(z0_y));
     z0_text.setCharacterSize(30);
 
     sf::Text factor_text;
@@ -47,12 +48,19 @@ void create_window(render_ctx& ctx) {
 
     menu menubar;
     menubar.set_position({0, (float)ctx.height() - 100});
-    menubar.add_item(std::unique_ptr<menu_item>{new menu_textitem(z0_text)});
-    menubar.add_item(std::unique_ptr<menu_item>{new menu_textitem(factor_text)});
+    auto z0_textbox{std::make_shared<menu_textitem>(z0_text)};
+
+    menubar.add_item(z0_textbox);
+    menubar.add_item(std::shared_ptr<menu_item>{new menu_textitem(factor_text)});
 
     while (window.isOpen()) {
         sf::Event event;
         while(window.pollEvent(event)) {
+            if (event.type == sf::Event::Resized) {
+                window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
+                texture.create(event.size.width, event.size.height);
+                fractal.setTexture(texture, true);
+            }
             if (event.type == sf::Event::Closed) {
                 window.close();
             } else if (event.type == sf::Event::KeyPressed) {
@@ -76,10 +84,10 @@ void create_window(render_ctx& ctx) {
                         ctx.zoom(0.001);
                     break;
                     case sf::Keyboard::S:
-                        dz0_x = -0.00001;
+                        dz0_x += -0.00001;
                     break;
                     case sf::Keyboard::R:
-                        dz0_x = 0.00001;
+                        dz0_x += 0.00001;
                     break;
                     case sf::Keyboard::Space:
                         dz0_x = 0.0;
@@ -105,20 +113,19 @@ void create_window(render_ctx& ctx) {
                     break;
                 }
             }
-
-            if (event.type == sf::Event::TextEntered) {
-            }
         }
 
         window.clear();
         window.draw(fractal, &shader);
         z0_x += dz0_x;
+        z0_y -= dz0_x;
         ctx.update_pos();
         ctx.update_zoom();
         shader.setUniform("factor", (float)ctx.zoom_factor());
         shader.setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
-        shader.setUniform("z0", sf::Glsl::Vec2(z0_x, 0.12));
+        shader.setUniform("z0", sf::Glsl::Vec2(z0_x, z0_y));
         menubar.draw(window);
+        z0_textbox->set_text("z0 = (" + std::to_string(z0_x) + ", " + std::to_string(z0_y) + ")");
         window.display();
     }
 }

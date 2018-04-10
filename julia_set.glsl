@@ -17,8 +17,8 @@ float iters(float x, float y) {
 
 vec4 get_color(float iter, float max_iter) {
     float div = iter / max_iter;
-    float color_r = div;
-    float color_g = div / 2.0;
+    float color_r = div / 2.0;
+    float color_g = div / 1.3;
     float color_b = div / 5.0;
     return vec4(color_r, color_g, color_b, 1.0);
 }

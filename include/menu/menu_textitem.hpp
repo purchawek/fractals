@@ -17,9 +17,14 @@ public:
 
     void draw(sf::RenderWindow&) const override;
 
-
     void set_position(const sf::Vector2f&) override;
     const sf::Vector2f& get_position() const override;
+
+    void set_text(const std::string& text);
+
+    void set_dimensions(const sf::FloatRect&) override;
+
+    const sf::FloatRect& get_dimensions() const override;
 };
 
 bool menu_textitem::on_selected() {
@@ -46,6 +51,15 @@ const sf::Vector2f& menu_textitem::get_position() const {
 
 sf::FloatRect menu_textitem::get_global_bounds() const {
     return {};
+}
+
+void menu_textitem::set_text(const std::string& text) {
+    content.setString(text);
+}
+
+void menu_textitem::set_dimensions(const sf::FloatRect& dimensions) {
+    content.setPosition(dimensions.left, dimensions.top);
+    content.setCharacterSize(dimensions.height);
 }
 
 #endif

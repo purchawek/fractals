@@ -9,6 +9,7 @@ struct render_ctx {
       width_{c_width},
       height_{c_height},
       rel_x_{0}, rel_y_{0},
+      horiz_v{0}, vert_v{0},
       zoom_factor_{1}, factor_{1} {
         set_default_offset();
     }
@@ -25,8 +26,8 @@ struct render_ctx {
     int cs_width() { return c_width_; }
     int cs_height() { return c_height_; }
 
-    int rel_x() { return rel_x_; }
-    int rel_y() { return rel_y_; }
+    double rel_x() { return rel_x_; }
+    double rel_y() { return rel_y_; }
 
     void move(int horiz, int vert) {
         horiz_v = horiz;
@@ -50,9 +51,8 @@ struct render_ctx {
 
     void update_zoom() {
         zoom_factor_ *= factor_;
-        double t = (factor_ <= 1 ? 1 - factor_ : factor_ - 1);
-        rel_x_ += t * rel_x_;
-        rel_y_ += t * rel_y_;
+        rel_x_ /= factor_;
+        rel_y_ /= factor_;
     }
 
     double zoom_factor() { return zoom_factor_; }
@@ -64,7 +64,7 @@ private:
 
     int width_;
     int height_;
-    int rel_x_, rel_y_;
+    double rel_x_, rel_y_;
 
     int horiz_v, vert_v;
 
