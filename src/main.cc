@@ -1,6 +1,5 @@
-#include <SFML/Graphics.hpp>
-
-#include "../lib/purlib/argparser/arg_parser.hpp"
+#include <pur/argparser/arg_parser.hpp>
+#include <pur/argparser/helper.hpp>
 
 #include "../include/fractals/julia_sets.hpp"
 #include "../include/color/color.hpp"
@@ -22,10 +21,23 @@ bool validate_params(int width, int height) {
 
 int main(int argc, char **argv) {
     arg_parser parser;
-    parser.register_arg(arg<int>{"--width", 640});
-    parser.register_arg(arg<int>{"--height", 480});
+    parser.register_arg(arg<int>{"--width", 640}
+        .set_help("Initial value for the width of the canvas"));
+    parser.register_arg(arg<int>{"--height", 480}
+        .set_help("Initial value for the height of the canvas"));
 
-    if (!parser.parse_program_params(argc, argv)) return 1;
+    pur::helper helper;
+
+    pur::helper::section subtitle{"Fractals", "Renders julia sets"};
+
+    try {
+        parser.parse_program_params(argc, argv);
+    } catch (const std::exception& exc) {
+        helper.add_section(subtitle)
+            .add_args_section(parser.get_args())
+            .print_help();
+        return 1;
+    }
 
     int width = parser.get_val<int>("--width");
     int height = parser.get_val<int>("--height");

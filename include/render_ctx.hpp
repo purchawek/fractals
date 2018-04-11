@@ -55,7 +55,9 @@ struct render_ctx {
         rel_y_ /= factor_;
     }
 
-    double zoom_factor() { return zoom_factor_; }
+    double d_zoom() const { return factor_; }
+
+    double zoom_factor() const { return zoom_factor_; }
 
 
 private:

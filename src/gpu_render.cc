@@ -1,15 +1,53 @@
 #include <iostream>
 
+#include <SFGUI/SFGUI.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "../include/render_ctx.hpp"
+#include <SFGUI/Widgets.hpp>
 
-#include "../include/menu/menu_textitem.hpp"
-#include "../include/menu/menu.hpp"
+#include "../include/render_ctx.hpp"
 
 void create_window(render_ctx& ctx) {
     sf::RenderWindow window{sf::VideoMode(ctx.width(), ctx.height()), "Fractals"};
     window.setVerticalSyncEnabled(true);
+
+    float z0_x = -0.789;
+    float z0_y = 0.15;
+
+    sfg::SFGUI sfgui;
+
+    auto z0_label = sfg::Label::Create("Hello label");
+    auto factor_label = sfg::Label::Create("Hello factor");
+    auto dfactor_label = sfg::Label::Create("Hello dfactor");
+    auto sfg_window = sfg::Window::Create();
+    sfg_window->SetTitle("MenuBar");
+
+    sfg::Desktop desktop;
+    desktop.Add(sfg_window);
+
+    auto z0_Re = sfg::Entry::Create();
+    z0_Re->SetRequisition(sf::Vector2f{80.0f, 0.0f});
+    auto z0_Im = sfg::Entry::Create();
+    z0_Im->SetRequisition(sf::Vector2f{80.0f, 0.0f});
+
+    auto accept_btn = sfg::Button::Create("Accept");
+
+    accept_btn->GetSignal(sfg::Widget::OnMouseLeftPress).Connect([&z0_Re, &z0_Im, &z0_x, &z0_y] {
+        z0_x = std::stod(std::string{z0_Re->GetText()});
+        z0_y = std::stod(std::string{z0_Im->GetText()});
+            });
+
+    auto box = sfg::Box::Create( sfg::Box::Orientation::VERTICAL, 5.0f );
+    box->Pack(z0_label);
+    box->Pack(factor_label);
+    box->Pack(dfactor_label);
+    box->Pack(z0_Re);
+    box->Pack(z0_Im);
+    box->Pack(accept_btn);
+
+    sfg_window->Add(box);
+
+    window.resetGLStates();
 
     sf::Texture texture;
     texture.create(ctx.cs_width(), ctx.cs_height());
@@ -24,8 +62,6 @@ void create_window(render_ctx& ctx) {
         if (window.isOpen()) window.close();
         return;
     }
-    float z0_x = -0.789;
-    float z0_y = 0.15;
     shader.setUniform("z0", sf::Glsl::Vec2(z0_x, z0_y));
     shader.setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
     shader.setUniform("resolution", sf::Glsl::Vec2(ctx.cs_width(), ctx.cs_height()));
@@ -35,27 +71,12 @@ void create_window(render_ctx& ctx) {
 
     sf::Font font;
     font.loadFromFile("inconsolata-regular.ttf");
-
-    sf::Text z0_text;
-    z0_text.setFont(font);
-    z0_text.setString("z0 = " + std::to_string(z0_x) + ": " + std::to_string(z0_y));
-    z0_text.setCharacterSize(30);
-
-    sf::Text factor_text;
-    factor_text.setFont(font);
-    factor_text.setString("factor = " + std::to_string(ctx.zoom_factor()));
-    factor_text.setPosition(0, 60);
-
-    menu menubar;
-    menubar.set_position({0, (float)ctx.height() - 100});
-    auto z0_textbox{std::make_shared<menu_textitem>(z0_text)};
-
-    menubar.add_item(z0_textbox);
-    menubar.add_item(std::shared_ptr<menu_item>{new menu_textitem(factor_text)});
+    sf::Event event;
+    sf::Clock clock;
 
     while (window.isOpen()) {
-        sf::Event event;
         while(window.pollEvent(event)) {
+            sfg_window->HandleEvent(event);
             if (event.type == sf::Event::Resized) {
                 window.setView(sf::View(sf::FloatRect(0, 0, event.size.width, event.size.height)));
                 texture.create(event.size.width, event.size.height);
@@ -115,6 +136,7 @@ void create_window(render_ctx& ctx) {
             }
         }
 
+        desktop.Update(clock.restart().asSeconds());
         window.clear();
         window.draw(fractal, &shader);
         z0_x += dz0_x;
@@ -124,8 +146,14 @@ void create_window(render_ctx& ctx) {
         shader.setUniform("factor", (float)ctx.zoom_factor());
         shader.setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
         shader.setUniform("z0", sf::Glsl::Vec2(z0_x, z0_y));
-        menubar.draw(window);
-        z0_textbox->set_text("z0 = (" + std::to_string(z0_x) + ", " + std::to_string(z0_y) + ")");
+        z0_label->SetText("z0 = (" + std::to_string(z0_x) + ", " + std::to_string(z0_y) + ")");
+        factor_label->SetText("factor = " + std::to_string(ctx.zoom_factor()));
+        dfactor_label->SetText("d_factor = " + std::to_string(ctx.d_zoom()));
+        if(dz0_x != 0) {
+            z0_Re->SetText(std::to_string(z0_x));
+            z0_Im->SetText(std::to_string(z0_y));
+        }
+        sfgui.Display(window);
         window.display();
     }
 }
