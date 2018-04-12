@@ -1,6 +1,8 @@
 #ifndef RENDER_CTX
 #define RENDER_CTX
 
+#include <complex>
+
 
 struct render_ctx {
     render_ctx(int c_width, int c_height)
@@ -10,7 +12,7 @@ struct render_ctx {
       height_{c_height},
       rel_x_{0}, rel_y_{0},
       horiz_v{0}, vert_v{0},
-      zoom_factor_{1}, factor_{1} {
+      zoom_factor_{1}, factor_{1}, z0_{-0.789, 0.12}, dz0{0, 0} {
         set_default_offset();
     }
 
@@ -19,6 +21,9 @@ struct render_ctx {
         rel_y_ = -height_ / 2;
         return *this;
     }
+
+    void set_z0(std::complex<double> z0) { z0_ = z0; }
+    std::complex<double> get_z0() const { return z0_; }
 
     int width() { return width_; }
     int height() { return height_; }
@@ -69,10 +74,16 @@ private:
     double rel_x_, rel_y_;
 
     int horiz_v, vert_v;
-
+public:
     double zoom_factor_;
-
     double factor_;
+private:
+
+
+    std::complex<double> z0_;
+
+public:
+    std::complex<double> dz0;
 };
 
 

@@ -1,0 +1,36 @@
+Window {
+	BackgroundColor: #fdf6e3ff;
+}
+
+/* Matches all Labels who are direct children of the table */
+/* This is NOT equivalent to "Window Label" */
+Window Label {
+        Color: #576e75ff;
+	FontSize: 15;
+}
+
+Button {
+	BackgroundColor: #fdf6e3ff;
+}
+
+Button:PRELIGHT {
+	BackgroundColor: #eee8d5ff;
+}
+
+Button {
+	Color: #586e75ff;
+}
+
+Entry {
+    BackgroundColor: #eee8d5ff;
+    Color: #586e75ff;
+}
+
+/* Matches all Buttons who are descendants of ScrolledWindow */
+ScrolledWindow Button {
+	BackgroundColor: #123456ff;
+}
+
+Button#close {
+	BackgroundColor: #ff0000ff;
+}
