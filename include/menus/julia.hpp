@@ -2,6 +2,7 @@
 #define JULIA_MENU_HPP
 
 #include <SFGUI/SFGUI.hpp>
+#include <sstream>
 
 #include <SFGUI/Widgets.hpp>
 
@@ -85,8 +86,8 @@ public:
             ctx.factor_ = df;
         });
 
-        run_btn->GetSignal(sfg::Widget::OnMouseLeftPress).Connect([] {
-            // dz0_x = 0;
+        run_btn->GetSignal(sfg::Widget::OnMouseLeftPress).Connect([&ctx] {
+            ctx.dz0 = {0.0, 0.0};
         });
 
 
