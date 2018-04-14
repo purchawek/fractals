@@ -6,7 +6,7 @@
 
 #include <SFGUI/Widgets.hpp>
 
-#include "../render_ctx.hpp"
+#include "../../render_ctx.hpp"
 
 class julia_menu {
 

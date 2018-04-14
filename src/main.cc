@@ -1,7 +1,6 @@
 #include <pur/argparser/arg_parser.hpp>
 #include <pur/argparser/helper.hpp>
 
-#include "../include/fractals/julia_sets.hpp"
 #include "../include/color/color.hpp"
 #include "../include/render_ctx.hpp"
 

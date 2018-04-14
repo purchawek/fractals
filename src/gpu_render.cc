@@ -8,7 +8,9 @@
 
 #include "../include/render_ctx.hpp"
 
-#include "../include/menus/julia.hpp"
+#include "../include/fractal/julia/menu.hpp"
+#include "../include/fractal/julia/keyboard.hpp"
+#include "../include/fractal/julia/shader.hpp"
 
 void create_window(render_ctx& ctx) {
     sf::RenderWindow window{sf::VideoMode(ctx.width(), ctx.height()), "Fractals"};
@@ -25,6 +27,7 @@ void create_window(render_ctx& ctx) {
     desktop.LoadThemeFromFile("./gui_themes/light.theme");
 
     julia_menu menu(sfg_window, ctx);
+    julia_keyboard keyboard(ctx, menu);
 
     window.resetGLStates();
 
@@ -33,25 +36,13 @@ void create_window(render_ctx& ctx) {
     sf::Sprite fractal;
     fractal.setTexture(texture);
 
-    sf::Shader shader;
-    shader.loadFromFile("shaders/julia_set.glsl", sf::Shader::Fragment);
+    julia_shader shader(window, ctx);
 
-    if (!shader.isAvailable()) {
-        std::cerr << "Couldn't load the shader." << std::endl;
-        if (window.isOpen()) window.close();
-        return;
-    }
-    shader.setUniform("z0", sf::Glsl::Vec2(ctx.get_z0().real(), ctx.get_z0().imag()));
-    shader.setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
-    shader.setUniform("resolution", sf::Glsl::Vec2(ctx.cs_width(), ctx.cs_height()));
-    shader.setUniform("factor", (float)ctx.zoom_factor());
-
-
-    sf::Font font;
-    font.loadFromFile("inconsolata-regular.ttf");
     sf::Event event;
     sf::Clock clock;
 
+
+    // TODO create a separate class for changing the color with time
     double base = 0.0;
     double phase = 3.1415 / 12;
     sf::Vector3f colors{
@@ -70,71 +61,16 @@ void create_window(render_ctx& ctx) {
             }
             if (event.type == sf::Event::Closed) {
                 window.close();
-            } else if (event.type == sf::Event::KeyPressed) {
-                switch(event.key.code) {
-                    case sf::Keyboard::Left:
-                        ctx.move(-8, 0);
-                    break;
-                    case sf::Keyboard::Right:
-                        ctx.move(8, 0);
-                    break;
-                    case sf::Keyboard::Up:
-                        ctx.move(0, 8);
-                    break;
-                    case sf::Keyboard::Down:
-                        ctx.move(0, -8);
-                    break;
-                    case sf::Keyboard::Add:
-                        ctx.zoom(-0.001);
-                        menu.update_dzoom(ctx);
-                    break;
-                    case sf::Keyboard::Subtract:
-                        ctx.zoom(0.001);
-                        menu.update_dzoom(ctx);
-                    break;
-                    case sf::Keyboard::S:
-                        ctx.dz0 += std::complex<double>{-0.00001, -0.00001};
-                        menu.update_dz(ctx);
-                    break;
-                    case sf::Keyboard::R:
-                        ctx.dz0 += std::complex<double>{0.00001, 0.00001};
-                        menu.update_dz(ctx);
-                    break;
-                    case sf::Keyboard::Space:
-                        ctx.dz0 = {0, 0};
-                    break;
-                    default:
-                    break;
-                }
-            } else if (event.type == sf::Event::KeyReleased) {
-                switch(event.key.code) {
-                    case sf::Keyboard::Left:
-                        ctx.move(0, 0);
-                    break;
-                    case sf::Keyboard::Right:
-                        ctx.move(0, 0);
-                    break;
-                    case sf::Keyboard::Up:
-                        ctx.move(0, 0);
-                    break;
-                    case sf::Keyboard::Down:
-                        ctx.move(0, 0);
-                    break;
-                    default:
-                    break;
-                }
             }
+            keyboard.handle_event(event);
         }
         desktop.Update(clock.restart().asSeconds());
         window.clear();
-        window.draw(fractal, &shader);
+        window.draw(fractal, shader.get());
         ctx.set_z0(ctx.get_z0() + ctx.dz0);
         ctx.update_pos();
         ctx.update_zoom();
-        shader.setUniform("factor", (float)ctx.zoom_factor());
-        shader.setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
-        shader.setUniform("z0", sf::Glsl::Vec2(ctx.get_z0().real(), ctx.get_z0().imag()));
-        shader.setUniform("color", colors);
+        shader.update(colors);
         colors = {
                 static_cast<float>(fabs(sin(base + phase))),
                 static_cast<float>(fabs(sin(base + phase*2))),
