@@ -8,7 +8,7 @@ vec3 iters(float x, float y) {
     float result = 0.0;
     float tmp;
     for(; result < 100.0; ++result) {
-        if ((x * x + y * y) >= 4.0) return result;
+        if ((x * x + y * y) >= 4.0) return vec3(result, x, y);
         tmp = x;
         x = x*x - y*y + z0[0];
         y = 2.0 * tmp * y + z0[1];

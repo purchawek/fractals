@@ -6,11 +6,12 @@
 #include <SFML/Graphics.hpp>
 #include "../../render_ctx.hpp"
 
-static const int SHADERS_CNT = 2;
+static const int SHADERS_CNT = 3;
 
 static const char* SHADERS_PATHS[SHADERS_CNT] = {
     "shaders/julia/linear.glsl",
-    "shaders/julia/loglog.glsl"
+    "shaders/julia/loglog.glsl",
+    "shaders/julia/mandelbrot.glsl"
 };
 
 class julia_shader {
@@ -25,23 +26,17 @@ public:
             if (window.isOpen()) window.close();
             return;
         }
-
-        if (!shader->isAvailable()) {
-            std::cerr << "Couldn't load the shader." << std::endl;
-            if (window.isOpen()) window.close();
-            return;
-        }
-        update();
+        update(shader);
     }
 
-    void update() {
+    void update(sf::Shader* shader) {
         shader->setUniform("z0", sf::Glsl::Vec2(ctx.get_z0().real(), ctx.get_z0().imag()));
         shader->setUniform("offset", sf::Glsl::Vec2(ctx.rel_x(), ctx.rel_y()));
         shader->setUniform("factor", (float)ctx.zoom_factor());
     }
 
     void update(const sf::Vector3f& colors) {
-        update();
+        update(shader);
         shader->setUniform("color", colors);
     }
 
@@ -50,10 +45,10 @@ public:
     void swap_shader() {
         for(size_t i = 0; i < SHADERS_CNT; ++i)
             if(shader == &shaders[i]) {
+                update(&shaders[(i+1)%SHADERS_CNT]);
                 shader = &shaders[(i+1)%SHADERS_CNT];
                 return;
             }
-        update();
     }
 
 private:

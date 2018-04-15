@@ -4,24 +4,23 @@ uniform vec2 offset;
 uniform float factor;
 uniform vec2 z0;
 
+
 vec3 iters(float x, float y) {
+    float zx = 0.0;
+    float zy = 0.0;
     float result = 0.0;
     float tmp;
     for(; result < 100.0; ++result) {
-        if ((x * x + y * y) >= 4.0) return vec3(result, x, y);
-        tmp = x;
-        x = x*x - y*y + z0[0];
-        y = 2.0 * tmp * y + z0[1];
+        if ((zx * zx + zy * zy) >= 4.0) return vec3(result, x, y);
+        tmp = zx;
+        x = zx*zx - zy*zy + x;
+        y = 2.0 * tmp * zy + y;
     }
     return vec3(result, x, y);
 }
 
 vec4 get_color(vec3 iter, float max_iter) {
-    float modulus = sqrt(iter[1]*iter[1] + iter[2]*iter[2]);
-    float div;
-    if (iter[0] != 100.0)
-        div = (iter[0] - log(log(modulus)))/100.0;
-    else div = 1.0;
+    float div = iter[0] / max_iter;
     float color_r = div * color[0];
     float color_g = div * color[1];
     float color_b = div * color[2];
