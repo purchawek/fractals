@@ -1,23 +1,34 @@
+#include <iostream>
+#include <complex>
+
+#include <SFGUI/SFGUI.hpp>
+#include <SFGUI/Widgets.hpp>
+
+#include <SFML/Graphics.hpp>
+
 #include <pur/argparser/arg_parser.hpp>
 #include <pur/argparser/helper.hpp>
 
 #include "../include/color/color.hpp"
 #include "../include/render_ctx.hpp"
 
-// #include "cpu_render.cc"
-// #include "gpu_render.cc"
-
-#include "../include/fractals/julia/renderer.hpp"
-
-#include <iostream>
-
-#include <complex>
+#include "../include/application.hpp"
 
 using pur::arg_parser;
 using pur::arg;
 
-bool validate_params(int width, int height) {
+bool validate_params(const arg_parser& parser) {
+    int width = parser.get_val<int>("--width");
+    int height = parser.get_val<int>("--height");
     return width > 10 && height > 10;
+}
+
+render_ctx create_ctx(const arg_parser& parser) {
+    int width = parser.get_val<int>("--width");
+    int height = parser.get_val<int>("--height");
+    render_ctx ctx{width, height};
+    ctx.resize(width, height);
+    return ctx;
 }
 
 int main(int argc, char **argv) {
@@ -40,17 +51,11 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    int width = parser.get_val<int>("--width");
-    int height = parser.get_val<int>("--height");
-
-    if (!validate_params(width, height)) {
-        std::cerr << "Invalid screen dimensions" << std::endl;
+    if (!validate_params(parser)) {
+        std::cerr << "Invalid program parameters, quitting" << std::endl;
         return 1;
     }
-
-    render_ctx ctx{width, height};
-    ctx.resize(width, height);
-    // create_window(ctx);
-    julia_renderer renderer{ctx};
-    renderer.render();
+    auto ctx = create_ctx(parser);
+    application app{ctx};
+    app.run();
 }

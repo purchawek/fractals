@@ -16,13 +16,6 @@ class julia_renderer {
     // fractal context
     render_ctx& ctx;
 
-
-    // the GUI context
-    sf::RenderWindow window;
-    sfg::SFGUI sfgui;
-    sfg::Window::Ptr sfg_window;
-    sfg::Desktop desktop;
-
     // julia-specific handlers
     julia_menu menu;
     julia_keyboard keyboard;
@@ -33,19 +26,17 @@ class julia_renderer {
     sf::Texture texture;
     sf::Sprite fractal;
 
-    // for reacting at events and animating the GUI
-    sf::Event event;
-    sf::Clock clock;
-
     // for changing the color in time (will be moved from here)
     sf::Vector3f colors;
     double base, phase;
 
 public:
-    julia_renderer(render_ctx& ctx);
+    julia_renderer(render_ctx& ctx, sfg::Window::Ptr gui, sf::RenderWindow& window);
 
-    void render();
+    void render(sf::RenderWindow& window);
 
+    void resized(const sf::Event& event);
+    void handle_key(const sf::Event& event);
 
 };
 
