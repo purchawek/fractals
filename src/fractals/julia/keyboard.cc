@@ -1,5 +1,6 @@
 #include "../../../include/fractals/julia/keyboard.hpp"
 
+#include "../../../include/fractals/julia/renderer.hpp"
 
 void julia_keyboard::handle_event(const sf::Event& event) {
    if (event.type == sf::Event::KeyPressed) {
@@ -31,6 +32,9 @@ void julia_keyboard::handle_event(const sf::Event& event) {
             case sf::Keyboard::R:
                 ctx.dz0 += std::complex<double>{0.00001, 0.00001};
                 menu.update_dz(ctx);
+            break;
+            case sf::Keyboard::T:
+                renderer.swap_shader();
             break;
             case sf::Keyboard::Space:
                 ctx.dz0 = {0, 0};

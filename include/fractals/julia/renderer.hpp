@@ -37,6 +37,7 @@ public:
 
     void resized(const sf::Event& event);
     void handle_key(const sf::Event& event);
+    void swap_shader();
 
 };
 

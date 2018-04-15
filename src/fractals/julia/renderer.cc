@@ -10,7 +10,7 @@ static constexpr double PHASE_DEF = 3.1415 / 12;
 
 
 julia_renderer::julia_renderer(render_ctx& ctx, sfg::Window::Ptr gui, sf::RenderWindow& window)
-: ctx { ctx }, menu{gui, ctx}, keyboard{menu, ctx}, shader{window, ctx} {
+: ctx { ctx }, menu{gui, ctx}, keyboard{menu, ctx, *this}, shader{window, ctx} {
     texture.create(ctx.cs_width(), ctx.cs_height());
     fractal.setTexture(texture);
 
@@ -44,4 +44,8 @@ void julia_renderer::render(sf::RenderWindow& window) {
     };
     menu.update(ctx);
     base += 0.0002;
+}
+
+void julia_renderer::swap_shader() {
+    shader.swap_shader();
 }

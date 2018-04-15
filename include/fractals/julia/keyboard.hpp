@@ -6,13 +6,16 @@
 #include "../../render_ctx.hpp"
 #include "menu.hpp"
 
+class julia_renderer;
+
 class julia_keyboard {
     render_ctx& ctx;
     julia_menu& menu;
+    julia_renderer& renderer;
 
 public:
-    julia_keyboard(julia_menu& menu, render_ctx& ctx)
-    : ctx{ ctx }, menu { menu } {}
+    julia_keyboard(julia_menu& menu, render_ctx& ctx, julia_renderer& renderer)
+    : ctx{ ctx }, menu { menu }, renderer { renderer } {}
 
     void handle_event(const sf::Event& evt);
 };
