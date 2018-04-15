@@ -64,7 +64,7 @@ struct render_ctx {
 
     double zoom_factor() const { return zoom_factor_; }
 
-
+    int threshold;
 private:
     // canvas dimensions
     int c_width_, c_height_;
