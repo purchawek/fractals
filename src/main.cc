@@ -5,7 +5,9 @@
 #include "../include/render_ctx.hpp"
 
 // #include "cpu_render.cc"
-#include "gpu_render.cc"
+// #include "gpu_render.cc"
+
+#include "../include/fractals/julia/renderer.hpp"
 
 #include <iostream>
 
@@ -48,5 +50,7 @@ int main(int argc, char **argv) {
 
     render_ctx ctx{width, height};
     ctx.resize(width, height);
-    create_window(ctx);
+    // create_window(ctx);
+    julia_renderer renderer{ctx};
+    renderer.render();
 }

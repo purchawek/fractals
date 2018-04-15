@@ -1,56 +1,34 @@
-#include <iostream>
-#include <cmath>
+#include "../../../include/fractals/julia/renderer.hpp"
+#include "../../../include/fractals/julia/menu.hpp"
+#include "../../../include/fractals/julia/keyboard.hpp"
+#include "../../../include/fractals/julia/shader.hpp"
 
-#include <SFGUI/SFGUI.hpp>
-#include <SFML/Graphics.hpp>
-
-#include <SFGUI/Widgets.hpp>
-
-#include "../include/render_ctx.hpp"
-
-#include "../include/fractal/julia/menu.hpp"
-#include "../include/fractal/julia/keyboard.hpp"
-#include "../include/fractal/julia/shader.hpp"
-
-void create_window(render_ctx& ctx) {
-    sf::RenderWindow window{sf::VideoMode(ctx.width(), ctx.height()), "Fractals"};
+julia_renderer::julia_renderer(render_ctx& ctx)
+: ctx { ctx }, window{sf::VideoMode(ctx.width(), ctx.height()), "Fractals"},
+sfgui{}, sfg_window{sfg::Window::Create()},
+menu{sfg_window, ctx}, keyboard{menu, ctx}, shader{window, ctx} {
     window.setVerticalSyncEnabled(true);
-
-    sfg::SFGUI sfgui;
-
-    auto sfg_window = sfg::Window::Create();
-    sfg_window->SetTitle("MenuBar");
-
-    sfg::Desktop desktop;
+    sfg_window->SetTitle("Julia menu");
     desktop.Add(sfg_window);
 
     desktop.LoadThemeFromFile("./gui_themes/light.theme");
 
-    julia_menu menu(sfg_window, ctx);
-    julia_keyboard keyboard(ctx, menu);
-
     window.resetGLStates();
 
-    sf::Texture texture;
     texture.create(ctx.cs_width(), ctx.cs_height());
-    sf::Sprite fractal;
     fractal.setTexture(texture);
 
-    julia_shader shader(window, ctx);
-
-    sf::Event event;
-    sf::Clock clock;
-
-
-    // TODO create a separate class for changing the color with time
-    double base = 0.0;
-    double phase = 3.1415 / 12;
-    sf::Vector3f colors{
-            static_cast<float>(sin(base + phase)),
-            static_cast<float>(sin(base + phase*2)),
-            static_cast<float>(sin(base + phase*3))
+    // TODO extract it somewhere
+    base = 0.0;
+    phase = 3.1415 / 12;
+    colors = {
+            static_cast<float>(fabs(sin(base + phase))),
+            static_cast<float>(fabs(sin(base + phase*2))),
+            static_cast<float>(fabs(sin(base + phase*3)))
     };
+}
 
+void julia_renderer::render() {
     while (window.isOpen()) {
         while(window.pollEvent(event)) {
             sfg_window->HandleEvent(event);

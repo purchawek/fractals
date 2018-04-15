@@ -11,7 +11,7 @@ class julia_keyboard {
     julia_menu& menu;
 
 public:
-    julia_keyboard(render_ctx& ctx, julia_menu& menu)
+    julia_keyboard(julia_menu& menu, render_ctx& ctx)
     : ctx{ ctx }, menu { menu } {}
 
     void handle_event(const sf::Event& evt);

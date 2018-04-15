@@ -1,4 +1,4 @@
-#include "../../../include/fractal/julia/keyboard.hpp"
+#include "../../../include/fractals/julia/keyboard.hpp"
 
 
 void julia_keyboard::handle_event(const sf::Event& event) {
