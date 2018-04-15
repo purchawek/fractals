@@ -25,7 +25,7 @@ Another requirement is **PURlib**, which is my library used for parsing program 
 
 ##### TODOs
 *	MORE FRACTALS
-*       a better Makefile
+*   a better Makefile
 *	total code refactor and cleanup
 *	consider deleting the old cpu-based renderer
 *	find some way for testing this
