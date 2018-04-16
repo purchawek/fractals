@@ -2,9 +2,13 @@
 
 Program rendering some recognizable fractals in real time.
 
+![Mandelbrot set](/images/mandelbrot.png)
+
+![Julia set](/images/julia.png)
+
 ##### supported fractals:
 - [x] Julia sets
-- [ ] Mandelbrot set
+- [x] Mandelbrot set
 - [ ] Burning Ship Fractal
 - [ ] some other 
 
@@ -24,9 +28,11 @@ Another requirement is **PURlib**, which is my library used for parsing program 
 
 
 ##### TODOs
-*	MORE FRACTALS
+*   MORE FRACTALS
 *   a better Makefile
-*	total code refactor and cleanup
-*	consider deleting the old cpu-based renderer
-*	find some way for testing this
-*	documentation
+*   flexible and easy way for defining new shaders
+*   better gui (color selection, shader selection, more config options, help popup etc)
+*   installer so it becomes an application
+*   total code refactor and cleanup
+*   find some way for testing this
+*   documentation
